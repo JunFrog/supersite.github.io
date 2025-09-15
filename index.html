@@ -1,14 +1,117 @@
 <!DOCTYPE html>
-<html>
-<head></head>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub | Рейтинг игр</title>
+    <style>
+        /* Стили для красивого отображения */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        #games-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .game-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 250px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .game-cover {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .game-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .game-info {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .game-rating {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .loading {
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
 <body>
-<script>
-    alert('Приветствую на моем сайте :3');
-</script>
-<h5 style="text-align:left; color:rgb(217, 119, 6);">Genshin for newbies</h5>
-<h2 onmouseover="this.innerHTML='Ха, повелся'">НАВЕДИСЬ НА МЕНЯ ДАВАЙ ДА ДААААА!</h2>
-<h3 style="color:rgb(243, 18, 217);" onclick="alert('Привет, мир!')">Не нажимай, не надо...</h3>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <h1>🎮 Рейтинг игр</h1>
+    <!-- Сюда JavaScript вставит наши игры -->
+    <div id="games-list">
+        <div class="loading">Загружаем игры...</div>
+    </div>
+
+    <script>
+        // ТВОЯ ссылка на API (ЗАМЕНИ НА СВОЮ!)
+        const apiUrl = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/games';
+
+        // Функция для загрузки и отображения игр
+        async function loadGames() {
+            try {
+                // Делаем запрос к API
+                const response = await fetch(apiUrl);
+                // Преобразуем ответ в обычный JS-объект (массив игр)
+                const games = await response.json();
+
+                // Находим на странице блок, куда будем вставлять игры
+                const gamesContainer = document.getElementById('games-list');
+                // Очищаем блок с надписью "Загружаем..."
+                gamesContainer.innerHTML = '';
+
+                // Для каждой игры в массиве...
+                games.forEach(game => {
+                    // Создаем HTML-карточку для игры
+                    const gameCard = `
+                        <div class="game-card">
+                            <img src="${game.coverUrl}" alt="${game.title}" class="game-cover" onerror="this.src='https://via.placeholder.com/250x300?text=No+Image'">
+                            <div class="game-title">${game.title}</div>
+                            <div class="game-info">Разработчик: ${game.developer}</div>
+                            <div class="game-info">Год выхода: ${game.releaseYear}</div>
+                            <div class="game-rating">Рейтинг: ${game.rating}/10</div>
+                        </div>
+                    `;
+                    // Вставляем карточку в контейнер
+                    gamesContainer.innerHTML += gameCard;
+                });
+
+            } catch (error) {
+                // Если что-то пошло не так (например, API недоступно), покажем ошибку
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('games-list').innerHTML = '<div class="loading">Не удалось загрузить игры 😢 Проверь консоль для деталей.</div>';
+            }
+        }
+
+        // Вызываем функцию загрузки игр, когда страница полностью загрузится
+        window.onload = loadGames;
+    </script>
 </body>
 </html>
