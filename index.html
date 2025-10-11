@@ -3,115 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameHub | Рейтинг игр</title>
-    <style>
-        /* Стили для красивого отображения */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        #games-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .game-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 250px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .game-cover {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .game-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .game-info {
-            font-size: 14px;
-            margin: 5px 0;
-        }
-        .game-rating {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .loading {
-            text-align: center;
-            font-size: 20px;
-        }
-    </style>
+    <title>Моя Библиотека</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>🎮 Рейтинг игр</h1>
-    <!-- Сюда JavaScript вставит наши игры -->
-    <div id="games-list">
-        <div class="loading">Загружаем игры...</div>
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <h1>📚 Моя Библиотека</h1>
+            <button class="btn btn-primary" id="addBookBtn">+ Добавить</button>
+        </header>
+
+        <!-- Панель фильтров -->
+        <div class="filters">
+            <select id="typeFilter">
+                <option value="">Все типы</option>
+                <option value="book">Книги</option>
+                <option value="game">Игры</option>
+                <option value="movie">Фильмы</option>
+                <option value="series">Сериалы</option>
+            </select>
+            
+            <select id="statusFilter">
+                <option value="">Все статусы</option>
+                <option value="planned">В планах</option>
+                <option value="in-progress">В процессе</option>
+                <option value="completed">Завершено</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Поиск по названию...">
+        </div>
+
+        <!-- Контейнер для карточек -->
+        <div class="books-grid" id="booksContainer">
+            <!-- Сюда JavaScript вставит карточки -->
+        </div>
     </div>
 
-    <script>
-        // ТВОЯ ссылка на API (ЗАМЕНИ НА СВОЮ!)
-        const apiUrl = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/games';
+    <!-- Модальное окно для добавления/редактирования -->
+    <div class="modal" id="bookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Добавить в библиотеку</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form id="bookForm">
+                <input type="hidden" id="itemId">
+                
+                <div class="form-group">
+                    <label for="title">Название *</label>
+                    <input type="text" id="title" required>
+                </div>
 
-        // Функция для загрузки и отображения игр
-        async function loadGames() {
-            try {
-                // Делаем запрос к API
-                const response = await fetch(apiUrl);
-                // Преобразуем ответ в обычный JS-объект (массив игр)
-                const games = await response.json();
+                <div class="form-group">
+                    <label for="type">Тип *</label>
+                    <select id="type" required>
+                        <option value="">Выберите тип</option>
+                        <option value="book">Книга</option>
+                        <option value="game">Игра</option>
+                        <option value="movie">Фильм</option>
+                        <option value="series">Сериал</option>
+                    </select>
+                </div>
 
-                // Находим на странице блок, куда будем вставлять игры
-                const gamesContainer = document.getElementById('games-list');
-                // Очищаем блок с надписью "Загружаем..."
-                gamesContainer.innerHTML = '';
+                <div class="form-group">
+                    <label for="author">Автор/Разработчик *</label>
+                    <input type="text" id="author" required>
+                </div>
 
-                // Для каждой игры в массиве...
-                games.forEach(game => {
-                    // Создаем HTML-карточку для игры
-                    const gameCard = `
-                        <div class="game-card">
-                            <img src="${game.coverUrl}" alt="${game.title}" class="game-cover" onerror="this.src='https://via.placeholder.com/250x300?text=No+Image'">
-                            <div class="game-title">${game.title}</div>
-                            <div class="game-info">Разработчик: ${game.developer}</div>
-                            <div class="game-info">Год выхода: ${game.releaseYear}</div>
-                            <div class="game-rating">Рейтинг: ${game.rating}/10</div>
-                        </div>
-                    `;
-                    // Вставляем карточку в контейнер
-                    gamesContainer.innerHTML += gameCard;
-                });
+                <div class="form-group">
+                    <label for="status">Статус *</label>
+                    <select id="status" required>
+                        <option value="">Выберите статус</option>
+                        <option value="planned">В планах</option>
+                        <option value="in-progress">В процессе</option>
+                        <option value="completed">Завершено</option>
+                    </select>
+                </div>
 
-            } catch (error) {
-                // Если что-то пошло не так (например, API недоступно), покажем ошибку
-                console.error('Ошибка загрузки:', error);
-                document.getElementById('games-list').innerHTML = '<div class="loading">Не удалось загрузить игры 😢 Проверь консоль для деталей.</div>';
-            }
-        }
+                <div class="form-group">
+                    <label for="rating">Рейтинг (0-10)</label>
+                    <input type="number" id="rating" min="0" max="10" value="0">
+                </div>
 
-        // Вызываем функцию загрузки игр, когда страница полностью загрузится
-        window.onload = loadGames;
-    </script>
+                <div class="form-group">
+                    <label for="image">Ссылка на обложку</label>
+                    <input type="url" id="image">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Описание</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
