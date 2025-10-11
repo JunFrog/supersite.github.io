@@ -1,4 +1,5 @@
-const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
+// Конфигурация - ЗАМЕНИ НА СВОЙ URL ОТ MOCKAPI
+const API_URL = 'https://6543c6a101b5e279de20f6c0.mockapi.io/api/v1/library';
 
 // Элементы DOM
 const booksContainer = document.getElementById('booksContainer');
@@ -9,6 +10,7 @@ const cancelBtn = document.getElementById('cancelBtn');
 const bookForm = document.getElementById('bookForm');
 const modalTitle = document.getElementById('modalTitle');
 const itemIdInput = document.getElementById('itemId');
+const themeToggle = document.getElementById('themeToggle');
 
 // Фильтры
 const typeFilter = document.getElementById('typeFilter');
@@ -19,8 +21,29 @@ const searchInput = document.getElementById('searchInput');
 let books = [];
 let filteredBooks = [];
 
+// Управление темой
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButton(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeButton(newTheme);
+}
+
+function updateThemeButton(theme) {
+    themeToggle.textContent = theme === 'light' ? '🌙 Тёмная тема' : '☀️ Светлая тема';
+}
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
     loadBooks();
     setupEventListeners();
 });
@@ -31,6 +54,7 @@ function setupEventListeners() {
     closeModal.addEventListener('click', () => closeModalWindow());
     cancelBtn.addEventListener('click', () => closeModalWindow());
     bookForm.addEventListener('submit', handleFormSubmit);
+    themeToggle.addEventListener('click', toggleTheme);
     
     // Фильтры
     typeFilter.addEventListener('change', applyFilters);
@@ -83,9 +107,13 @@ function renderBooks() {
     
     booksContainer.innerHTML = filteredBooks.map(book => `
         <div class="book-card">
-            <img src="${book.image || 'https://via.placeholder.com/300x200?text=No+Image'}" 
-                 alt="${book.title}" 
-                 onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+            <div class="image-container">
+                <img src="${book.image || getDefaultImage(book.type)}" 
+                     alt="${book.title}"
+                     loading="lazy"
+                     onerror="this.src='${getDefaultImage(book.type)}'; this.onerror=null;">
+                <div class="image-placeholder">${getTypeIcon(book.type)}</div>
+            </div>
             <div class="book-card-content">
                 <h3>${book.title}</h3>
                 <p class="author">${book.author}</p>
@@ -123,6 +151,26 @@ function getStatusLabel(status) {
         'completed': 'Завершено'
     };
     return statuses[status] || status;
+}
+
+function getDefaultImage(type) {
+    const defaultImages = {
+        'book': 'https://via.placeholder.com/400x280/3498db/ffffff?text=📚',
+        'game': 'https://via.placeholder.com/400x280/e74c3c/ffffff?text=🎮',
+        'movie': 'https://via.placeholder.com/400x280/9b59b6/ffffff?text=🎬',
+        'series': 'https://via.placeholder.com/400x280/2ecc71/ffffff?text=📺'
+    };
+    return defaultImages[type] || 'https://via.placeholder.com/400x280/95a5a6/ffffff?text=📁';
+}
+
+function getTypeIcon(type) {
+    const icons = {
+        'book': '📚',
+        'game': '🎮', 
+        'movie': '🎬',
+        'series': '📺'
+    };
+    return icons[type] || '📁';
 }
 
 // Работа с модальным окном
