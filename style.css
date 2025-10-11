@@ -1,40 +1,81 @@
+/* CSS переменные для светлой темы */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --text-muted: #95a5a6;
+    --border-color: #e9ecef;
+    --shadow: 0 5px 15px rgba(0,0,0,0.1);
+    --shadow-hover: 0 15px 30px rgba(0,0,0,0.2);
+    --gradient-header: linear-gradient(135deg, #2c3e50, #34495e);
+    --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Тёмная тема */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-card: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #bdc3c7;
+    --text-muted: #95a5a6;
+    --border-color: #404040;
+    --shadow: 0 5px 15px rgba(0,0,0,0.3);
+    --shadow-hover: 0 15px 30px rgba(0,0,0,0.4);
+    --gradient-header: linear-gradient(135deg, #34495e, #2c3e50);
+    --gradient-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
 /* RESET И БАЗОВЫЕ СТИЛИ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-bg);
     min-height: 100vh;
     padding: 20px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 /* КОНТЕЙНЕР */
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    background: white;
+    background: var(--bg-primary);
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
     overflow: hidden;
+    min-height: 90vh;
 }
 
 /* ШАПКА */
 .header {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: var(--gradient-header);
     color: white;
     padding: 30px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .header h1 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
     font-weight: 700;
+}
+
+.header-controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 /* КНОПКИ */
@@ -67,6 +108,7 @@ body {
 
 .btn-secondary:hover {
     background: #7f8c8d;
+    transform: translateY(-2px);
 }
 
 .btn-danger {
@@ -96,20 +138,22 @@ body {
 .filters {
     display: flex;
     gap: 15px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 25px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
     flex-wrap: wrap;
 }
 
 .filters select,
 .filters input {
-    padding: 10px 15px;
-    border: 2px solid #e9ecef;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s ease;
     min-width: 150px;
+    background: var(--bg-card);
+    color: var(--text-primary);
 }
 
 .filters select:focus,
@@ -120,77 +164,112 @@ body {
 
 .filters input {
     flex: 1;
-    min-width: 200px;
+    min-width: 250px;
 }
 
 /* СЕТКА КАРТОЧЕК */
 .books-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 25px;
 }
 
 /* КАРТОЧКА */
 .book-card {
-    background: white;
+    background: var(--bg-card);
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
 }
 
 .book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
 }
 
-.book-card img {
+/* КОНТЕЙНЕР ИЗОБРАЖЕНИЯ - УВЕЛИЧИЛИ РАЗМЕР */
+.image-container {
+    position: relative;
     width: 100%;
-    height: 200px;
+    height: 280px; /* Увеличили высоту */
+    overflow: hidden;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-bottom: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.book-card:hover .image-container img {
+    transform: scale(1.05);
+}
+
+.image-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem; /* Увеличили иконку */
+    opacity: 0.4;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .book-card-content {
-    padding: 20px;
+    padding: 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .book-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 8px;
-    color: #2c3e50;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
     font-weight: 600;
+    line-height: 1.3;
 }
 
 .book-card .author {
-    color: #7f8c8d;
+    color: var(--text-secondary);
     margin-bottom: 15px;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .book-card .meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
 }
 
 /* БЕЙДЖИ */
 .badge {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 .badge-type {
-    background-color: #e8f4fd;
+    background-color: rgba(52, 152, 219, 0.1);
     color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.2);
 }
 
 .badge-status {
@@ -212,13 +291,15 @@ body {
 .rating {
     color: #f39c12;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .book-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
+    margin-top: auto;
+    padding-top: 20px;
+    gap: 10px;
 }
 
 /* МОДАЛЬНОЕ ОКНО */
@@ -230,18 +311,19 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.7);
     backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background-color: white;
+    background-color: var(--bg-card);
     margin: 5% auto;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 90%;
     max-width: 500px;
     animation: modalShow 0.3s ease;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
 }
 
 @keyframes modalShow {
@@ -260,10 +342,10 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 25px;
-    border-bottom: 1px solid #e9ecef;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--gradient-header);
     color: white;
-    border-radius: 15px 15px 0 0;
+    border-radius: 20px 20px 0 0;
 }
 
 .modal-header h2 {
@@ -295,18 +377,20 @@ form {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-primary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s ease;
+    background: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .form-group input:focus,
@@ -323,7 +407,7 @@ form {
     gap: 12px;
     margin-top: 25px;
     padding-top: 20px;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid var(--border-color);
 }
 
 /* СООБЩЕНИЯ */
@@ -336,25 +420,34 @@ form {
 
 .no-books {
     text-align: center;
-    color: #7f8c8d;
-    padding: 40px;
-    font-size: 1.1rem;
+    color: var(--text-muted);
+    padding: 60px 40px;
+    font-size: 1.2rem;
     grid-column: 1 / -1;
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    margin: 20px;
 }
 
 /* АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .header {
         padding: 20px;
+        flex-direction: column;
+        text-align: center;
     }
     
     .header h1 {
         font-size: 2rem;
     }
     
+    .header-controls {
+        justify-content: center;
+    }
+    
     .filters {
         flex-direction: column;
-        padding: 15px;
+        padding: 20px;
     }
     
     .filters select,
@@ -364,8 +457,12 @@ form {
     
     .books-grid {
         grid-template-columns: 1fr;
-        padding: 15px;
-        gap: 15px;
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .image-container {
+        height: 250px;
     }
     
     .modal-content {
@@ -392,17 +489,21 @@ form {
     }
     
     .book-card-content {
-        padding: 15px;
+        padding: 20px;
     }
     
     .book-actions {
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
     }
     
     .book-actions .btn {
         width: 100%;
         margin-right: 0;
+    }
+    
+    .image-container {
+        height: 220px;
     }
 }
 
@@ -422,14 +523,20 @@ form {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--text-muted);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--text-secondary);
+}
+
+/* Плавный переход для темы */
+body, .container, .book-card, .filters select, .filters input,
+.form-group input, .form-group select, .form-group textarea {
+    transition: all 0.3s ease;
 }
