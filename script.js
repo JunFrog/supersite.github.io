@@ -1,5 +1,5 @@
 // Конфигурация - ЗАМЕНИ НА СВОЙ URL ОТ MOCKAPI
-const API_URL = 'https://6543c6a101b5e279de20f6c0.mockapi.io/api/v1/library';
+const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
 
 // Элементы DOM
 const booksContainer = document.getElementById('booksContainer');
