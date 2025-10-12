@@ -411,6 +411,37 @@ form {
 }
 
 /* СООБЩЕНИЯ */
+.error-message {
+    text-align: center;
+    padding: 40px;
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    margin: 20px;
+    border-left: 4px solid #e74c3c;
+}
+
+.error-message h3 {
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+
+.debug-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.debug-info ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.debug-info li {
+    margin: 5px 0;
+}
 .error {
     color: #e74c3c;
     text-align: center;
