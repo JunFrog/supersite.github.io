@@ -135,16 +135,6 @@ function getDefaultImage(type) {
     return defaultImages[type] || 'https://via.placeholder.com/400x280/95a5a6/ffffff?text=📁';
 }
 
-function getTypeIcon(type) {
-    const icons = {
-        'book': '📚',
-        'game': '🎮', 
-        'movie': '🎬',
-        'series': '📺'
-    };
-    return icons[type] || '📁';
-}
-
 // Модальное окно
 function openModal(book = null) {
     const bookModal = document.getElementById('bookModal');
