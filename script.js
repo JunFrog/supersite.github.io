@@ -1,19 +1,11 @@
-https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library;
+// Конфигурация - ЗАМЕНИ НА СВОЙ URL ОТ MOCKAPI
+const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
 
 // Элементы DOM
-const booksContainer = document.getElementById('booksContainer');
-const addBookBtn = document.getElementById('addBookBtn');
-const bookModal = document.getElementById('bookModal');
-const closeModal = document.getElementById('closeModal');
-const cancelBtn = document.getElementById('cancelBtn');
-const bookForm = document.getElementById('bookForm');
-const modalTitle = document.getElementById('modalTitle');
-const itemIdInput = document.getElementById('itemId');
+let booksContainer, addBookBtn, bookModal, closeModal, cancelBtn, bookForm, modalTitle, itemIdInput;
 
 // Фильтры
-const typeFilter = document.getElementById('typeFilter');
-const statusFilter = document.getElementById('statusFilter');
-const searchInput = document.getElementById('searchInput');
+let typeFilter, statusFilter, searchInput;
 
 // Текущие данные
 let books = [];
@@ -45,10 +37,27 @@ function updateThemeButton(theme) {
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Страница загружена, инициализируем...');
+    initElements();
     initTheme();
     setupEventListeners();
     loadBooks();
 });
+
+// Инициализация элементов DOM
+function initElements() {
+    booksContainer = document.getElementById('booksContainer');
+    addBookBtn = document.getElementById('addBookBtn');
+    bookModal = document.getElementById('bookModal');
+    closeModal = document.getElementById('closeModal');
+    cancelBtn = document.getElementById('cancelBtn');
+    bookForm = document.getElementById('bookForm');
+    modalTitle = document.getElementById('modalTitle');
+    itemIdInput = document.getElementById('itemId');
+    
+    typeFilter = document.getElementById('typeFilter');
+    statusFilter = document.getElementById('statusFilter');
+    searchInput = document.getElementById('searchInput');
+}
 
 // Настройка обработчиков событий
 function setupEventListeners() {
