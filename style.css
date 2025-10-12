@@ -216,17 +216,6 @@ body {
     transform: scale(1.05);
 }
 
-.image-placeholder {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 4rem; /* Увеличили иконку */
-    opacity: 0.4;
-    z-index: 1;
-    pointer-events: none;
-}
-
 .book-card-content {
     padding: 25px;
     flex: 1;
