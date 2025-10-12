@@ -1,4 +1,4 @@
-console.log('Script loaded!');
+console.log('Script loaded successfully!');
 
 const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
 
@@ -10,16 +10,23 @@ async function loadBooks() {
         const data = await response.json();
         console.log('Data loaded:', data);
         
-        // Просто покажем данные в консоли
         document.getElementById('booksContainer').innerHTML = 
-            '<p>Данные загружены, смотри консоль</p>';
+            '<p>✅ Данные загружены! Проверь консоль.</p>';
             
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('booksContainer').innerHTML = 
-            '<p>Ошибка: ' + error.message + '</p>';
+            '<p>❌ Ошибка: ' + error.message + '</p>';
     }
 }
 
 // Запускаем при загрузке
 document.addEventListener('DOMContentLoaded', loadBooks);
+
+// Кнопка темы
+function toggleTheme() {
+    console.log('Theme toggle clicked');
+}
+
+// Делаем глобальной
+window.toggleTheme = toggleTheme;
