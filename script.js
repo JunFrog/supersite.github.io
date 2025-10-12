@@ -10,7 +10,6 @@ const cancelBtn = document.getElementById('cancelBtn');
 const bookForm = document.getElementById('bookForm');
 const modalTitle = document.getElementById('modalTitle');
 const itemIdInput = document.getElementById('itemId');
-const themeToggle = document.getElementById('themeToggle');
 
 // Фильтры
 const typeFilter = document.getElementById('typeFilter');
@@ -38,28 +37,37 @@ function toggleTheme() {
 }
 
 function updateThemeButton(theme) {
-    themeToggle.textContent = theme === 'light' ? '🌙 Тёмная тема' : '☀️ Светлая тема';
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+    }
 }
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Страница загружена, инициализируем...');
     initTheme();
-    loadBooks();
     setupEventListeners();
+    loadBooks();
 });
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    addBookBtn.addEventListener('click', () => openModal());
-    closeModal.addEventListener('click', () => closeModalWindow());
-    cancelBtn.addEventListener('click', () => closeModalWindow());
-    bookForm.addEventListener('submit', handleFormSubmit);
-    themeToggle.addEventListener('click', toggleTheme);
+    console.log('Настраиваем обработчики событий...');
+    
+    if (addBookBtn) addBookBtn.addEventListener('click', () => openModal());
+    if (closeModal) closeModal.addEventListener('click', () => closeModalWindow());
+    if (cancelBtn) cancelBtn.addEventListener('click', () => closeModalWindow());
+    if (bookForm) bookForm.addEventListener('submit', handleFormSubmit);
+    
+    // Добавляем обработчик для кнопки темы
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     
     // Фильтры
-    typeFilter.addEventListener('change', applyFilters);
-    statusFilter.addEventListener('change', applyFilters);
-    searchInput.addEventListener('input', applyFilters);
+    if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
     
     // Закрытие модального окна при клике вне его
     window.addEventListener('click', (event) => {
@@ -71,26 +79,73 @@ function setupEventListeners() {
 
 // Загрузка данных из API
 async function loadBooks() {
+    console.log('Загружаем данные из API...', API_URL);
+    
     try {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Ошибка загрузки данных');
+        console.log('Ответ от API:', response);
         
-        books = await response.json();
-        applyFilters(); // Применяем фильтры после загрузки
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Данные получены:', data);
+        
+        books = data;
+        applyFilters();
+        
     } catch (error) {
-        console.error('Ошибка:', error);
-        booksContainer.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
+        console.error('Ошибка загрузки данных:', error);
+        showErrorMessage(`Ошибка загрузки данных: ${error.message}`);
+    }
+}
+
+// Показать сообщение об ошибке
+function showErrorMessage(message) {
+    if (booksContainer) {
+        booksContainer.innerHTML = `
+            <div class="error-message">
+                <h3>😕 Не удалось загрузить данные</h3>
+                <p>${message}</p>
+                <button class="btn btn-primary" onclick="loadBooks()">Повторить попытку</button>
+                <div class="debug-info">
+                    <p><strong>URL API:</strong> ${API_URL}</p>
+                    <p><strong>Проверь:</strong></p>
+                    <ul>
+                        <li>✅ Интернет-соединение</li>
+                        <li>✅ URL API в коде</li>
+                        <li>✅ Ресурс "library" в MockAPI</li>
+                    </ul>
+                </div>
+            </div>
+        `;
     }
 }
 
 // Применение фильтров
 function applyFilters() {
+    console.log('Применяем фильтры...');
+    
+    if (!books || books.length === 0) {
+        if (booksContainer) {
+            booksContainer.innerHTML = `
+                <div class="no-books">
+                    <h3>📚 Библиотека пуста</h3>
+                    <p>Добавьте первую книгу, фильм или игру!</p>
+                    <button class="btn btn-primary" onclick="openModal()">+ Добавить первый элемент</button>
+                </div>
+            `;
+        }
+        return;
+    }
+    
     filteredBooks = books.filter(book => {
-        const matchesType = !typeFilter.value || book.type === typeFilter.value;
-        const matchesStatus = !statusFilter.value || book.status === statusFilter.value;
-        const matchesSearch = !searchInput.value || 
+        const matchesType = !typeFilter?.value || book.type === typeFilter.value;
+        const matchesStatus = !statusFilter?.value || book.status === statusFilter.value;
+        const matchesSearch = !searchInput?.value || 
             book.title.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-            book.author.toLowerCase().includes(searchInput.value.toLowerCase());
+            (book.author && book.author.toLowerCase().includes(searchInput.value.toLowerCase()));
         
         return matchesType && matchesStatus && matchesSearch;
     });
@@ -100,6 +155,10 @@ function applyFilters() {
 
 // Отображение книг
 function renderBooks() {
+    console.log('Отрисовываем книги...', filteredBooks.length);
+    
+    if (!booksContainer) return;
+    
     if (filteredBooks.length === 0) {
         booksContainer.innerHTML = '<p class="no-books">Ничего не найдено</p>';
         return;
@@ -115,14 +174,14 @@ function renderBooks() {
                 <div class="image-placeholder">${getTypeIcon(book.type)}</div>
             </div>
             <div class="book-card-content">
-                <h3>${book.title}</h3>
-                <p class="author">${book.author}</p>
+                <h3>${book.title || 'Без названия'}</h3>
+                <p class="author">${book.author || 'Неизвестный автор'}</p>
                 <div class="meta">
                     <span class="badge badge-type">${getTypeLabel(book.type)}</span>
                     <span class="badge badge-status ${book.status}">${getStatusLabel(book.status)}</span>
                 </div>
                 <div class="meta">
-                    <span class="rating">⭐ ${book.rating}/10</span>
+                    <span class="rating">⭐ ${book.rating || 0}/10</span>
                 </div>
                 <div class="book-actions">
                     <button class="btn btn-edit" onclick="editBook('${book.id}')">✏️ Редактировать</button>
@@ -141,7 +200,7 @@ function getTypeLabel(type) {
         'movie': 'Фильм',
         'series': 'Сериал'
     };
-    return types[type] || type;
+    return types[type] || type || 'Другое';
 }
 
 function getStatusLabel(status) {
@@ -150,7 +209,7 @@ function getStatusLabel(status) {
         'in-progress': 'В процессе',
         'completed': 'Завершено'
     };
-    return statuses[status] || status;
+    return statuses[status] || status || 'Неизвестно';
 }
 
 function getDefaultImage(type) {
@@ -176,18 +235,16 @@ function getTypeIcon(type) {
 // Работа с модальным окном
 function openModal(book = null) {
     if (book) {
-        // Режим редактирования
         modalTitle.textContent = 'Редактировать';
         itemIdInput.value = book.id;
-        document.getElementById('title').value = book.title;
-        document.getElementById('type').value = book.type;
-        document.getElementById('author').value = book.author;
-        document.getElementById('status').value = book.status;
-        document.getElementById('rating').value = book.rating;
+        document.getElementById('title').value = book.title || '';
+        document.getElementById('type').value = book.type || '';
+        document.getElementById('author').value = book.author || '';
+        document.getElementById('status').value = book.status || '';
+        document.getElementById('rating').value = book.rating || 0;
         document.getElementById('image').value = book.image || '';
         document.getElementById('description').value = book.description || '';
     } else {
-        // Режим добавления
         modalTitle.textContent = 'Добавить в библиотеку';
         bookForm.reset();
         itemIdInput.value = '';
@@ -219,18 +276,16 @@ async function handleFormSubmit(event) {
     
     try {
         if (bookId) {
-            // Обновление существующей книги
             await updateBook(bookId, formData);
         } else {
-            // Добавление новой книги
             await addBook(formData);
         }
         
         closeModalWindow();
-        await loadBooks(); // Перезагружаем данные
+        await loadBooks();
     } catch (error) {
         console.error('Ошибка сохранения:', error);
-        alert('Ошибка сохранения данных');
+        alert('Ошибка сохранения данных: ' + error.message);
     }
 }
 
@@ -244,7 +299,7 @@ async function addBook(bookData) {
         body: JSON.stringify(bookData)
     });
     
-    if (!response.ok) throw new Error('Ошибка добавления');
+    if (!response.ok) throw new Error(`Ошибка добавления: ${response.status}`);
     return await response.json();
 }
 
@@ -257,7 +312,7 @@ async function updateBook(id, bookData) {
         body: JSON.stringify(bookData)
     });
     
-    if (!response.ok) throw new Error('Ошибка обновления');
+    if (!response.ok) throw new Error(`Ошибка обновления: ${response.status}`);
     return await response.json();
 }
 
@@ -271,12 +326,12 @@ async function deleteBook(id) {
             method: 'DELETE'
         });
         
-        if (!response.ok) throw new Error('Ошибка удаления');
+        if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
         
-        await loadBooks(); // Перезагружаем данные после удаления
+        await loadBooks();
     } catch (error) {
         console.error('Ошибка удаления:', error);
-        alert('Ошибка удаления элемента');
+        alert('Ошибка удаления элемента: ' + error.message);
     }
 }
 
@@ -287,3 +342,9 @@ function editBook(id) {
         openModal(book);
     }
 }
+
+// Делаем функции глобальными для HTML onclick
+window.editBook = editBook;
+window.deleteBook = deleteBook;
+window.openModal = openModal;
+window.loadBooks = loadBooks;
