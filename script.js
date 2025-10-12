@@ -78,32 +78,30 @@ function renderBooks() {
     }
     
     booksContainer.innerHTML = filteredBooks.map(book => `
-        <div class="book-card">
-            <div class="image-container">
-                <img src="${book.image || getDefaultImage(book.type)}" 
-                     alt="${book.title}"
-                     loading="lazy"
-                     onerror="this.src='${getDefaultImage(book.type)}'">
-                <div class="image-placeholder">${getTypeIcon(book.type)}</div>
+    <div class="book-card">
+        <div class="image-container">
+            <img src="${book.image || getDefaultImage(book.type)}" 
+                 alt="${book.title}"
+                 loading="lazy"
+                 onerror="this.src='${getDefaultImage(book.type)}'">
+        </div>
+        <div class="book-card-content">
+            <h3>${book.title}</h3>
+            <p class="author">${book.author}</p>
+            <div class="meta">
+                <span class="badge badge-type">${getTypeLabel(book.type)}</span>
+                <span class="badge badge-status ${book.status}">${getStatusLabel(book.status)}</span>
             </div>
-            <div class="book-card-content">
-                <h3>${book.title}</h3>
-                <p class="author">${book.author}</p>
-                <div class="meta">
-                    <span class="badge badge-type">${getTypeLabel(book.type)}</span>
-                    <span class="badge badge-status ${book.status}">${getStatusLabel(book.status)}</span>
-                </div>
-                <div class="meta">
-                    <span class="rating">⭐ ${book.rating}/10</span>
-                </div>
-                <div class="book-actions">
-                    <button class="btn btn-edit" onclick="editBook('${book.id}')">✏️ Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteBook('${book.id}')">🗑️ Удалить</button>
-                </div>
+            <div class="meta">
+                <span class="rating">⭐ ${book.rating}/10</span>
+            </div>
+            <div class="book-actions">
+                <button class="btn btn-edit" onclick="editBook('${book.id}')">✏️ Редактировать</button>
+                <button class="btn btn-danger" onclick="deleteBook('${book.id}')">🗑️ Удалить</button>
             </div>
         </div>
-    `).join('');
-}
+    </div>
+`).join('');
 
 // Вспомогательные функции
 function getTypeLabel(type) {
