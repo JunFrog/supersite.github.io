@@ -289,4 +289,4 @@ window.deleteBook = deleteBook;
 window.openModal = openModal;
 window.loadBooks = loadBooks;
 window.toggleTheme = toggleTheme;
-
+}
