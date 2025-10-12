@@ -125,16 +125,6 @@ function getStatusLabel(status) {
     return statuses[status] || status;
 }
 
-function getDefaultImage(type) {
-    const defaultImages = {
-        'book': 'https://via.placeholder.com/400x280/3498db/ffffff?text=📚',
-        'game': 'https://via.placeholder.com/400x280/e74c3c/ffffff?text=🎮',
-        'movie': 'https://via.placeholder.com/400x280/9b59b6/ffffff?text=🎬',
-        'series': 'https://via.placeholder.com/400x280/2ecc71/ffffff?text=📺'
-    };
-    return defaultImages[type] || 'https://via.placeholder.com/400x280/95a5a6/ffffff?text=📁';
-}
-
 // Модальное окно
 function openModal(book = null) {
     const bookModal = document.getElementById('bookModal');
