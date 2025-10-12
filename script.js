@@ -1,7 +1,7 @@
 console.log('✅ Script loaded successfully!');
 
 const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
-
+//проверка изменений
 // Основные переменные
 let books = [];
 let filteredBooks = [];
