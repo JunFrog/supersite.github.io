@@ -560,3 +560,19 @@ body, .container, .book-card, .filters select, .filters input,
 .form-group input, .form-group select, .form-group textarea {
     transition: all 0.3s ease;
 }
+/* Исправление прокрутки модального окна */
+.modal {
+    overflow-y: auto !important;
+}
+
+.modal-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    margin: 2% auto !important;
+}
+
+/* Убедимся что форма не ограничена по высоте */
+form {
+    min-height: auto !important;
+    overflow: visible !important;
+}
