@@ -78,7 +78,6 @@ function applyFilters() {
     console.log('📋 Filtered books:', filteredBooks.length);
     renderBooks();
 }
-
 function renderBooks() {
     console.log('🎨 Rendering books...');
     const booksContainer = document.getElementById('booksContainer');
@@ -109,6 +108,10 @@ function renderBooks() {
             <div class="book-card-content">
                 <h3>${book.title}</h3>
                 <p class="author">${book.author}</p>
+                
+                <!-- ДОБАВЛЯЕМ ОПИСАНИЕ -->
+                ${book.description ? `<p class="description">${book.description}</p>` : ''}
+                
                 <div class="meta">
                     <span class="badge badge-type">${getTypeLabel(book.type)}</span>
                     <span class="badge badge-status ${book.status}">${getStatusLabel(book.status)}</span>
