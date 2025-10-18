@@ -21,7 +21,12 @@ function initAuth() {
     // Данные загружаются в любом случае!
     loadBooks();
 }
-
+function viewWithoutPassword() {
+    console.log('👀 Viewing without password');
+    hideAuthOverlay();
+    disableEditing();
+    showNotification('👀 Режим просмотра', 'info');
+}
 function showAuthOverlay() {
     console.log('🔒 Showing auth overlay');
     const authOverlay = document.getElementById('authOverlay');
