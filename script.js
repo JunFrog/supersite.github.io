@@ -14,9 +14,12 @@ function initAuth() {
     
     if (isAuthenticated) {
         enableEditing();
+        hideAuthOverlay();
     } else {
         showAuthOverlay();
     }
+    // Данные загружаются в любом случае!
+    loadBooks();
 }
 
 function showAuthOverlay() {
@@ -67,6 +70,9 @@ function enableEditing() {
         addBookBtn.disabled = false;
         addBookBtn.classList.remove('btn-locked');
     }
+    
+    // Показываем кнопки редактирования на существующих карточках
+    showEditButtons();
 }
 
 function disableEditing() {
@@ -78,6 +84,23 @@ function disableEditing() {
         addBookBtn.disabled = true;
         addBookBtn.classList.add('btn-locked');
     }
+    
+    // Скрываем кнопки редактирования
+    hideEditButtons();
+}
+
+function showEditButtons() {
+    const editButtons = document.querySelectorAll('.btn-edit, .btn-danger');
+    editButtons.forEach(btn => {
+        btn.style.display = 'inline-block';
+    });
+}
+
+function hideEditButtons() {
+    const editButtons = document.querySelectorAll('.btn-edit, .btn-danger');
+    editButtons.forEach(btn => {
+        btn.style.display = 'none';
+    });
 }
 
 function showNotification(message, type = 'info') {
@@ -220,8 +243,14 @@ function renderBooks() {
                     <span class="rating">⭐ ${book.rating}/10</span>
                 </div>
                 <div class="book-actions">
-                    <button class="btn btn-edit" onclick="editBook('${book.id}')">✏️ Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteBook('${book.id}')">🗑️ Удалить</button>
+                    <button class="btn btn-edit" onclick="editBook('${book.id}')" 
+                            style="display: ${EDITING_ENABLED ? 'inline-block' : 'none'}">
+                        ✏️ Редактировать
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteBook('${book.id}')" 
+                            style="display: ${EDITING_ENABLED ? 'inline-block' : 'none'}">
+                        🗑️ Удалить
+                    </button>
                 </div>
             </div>
         </div>
@@ -478,9 +507,8 @@ function initEventListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM loaded, initializing app...');
     initTheme();
-    initAuth(); // Защита включается первой!
+    initAuth(); // Защита и загрузка данных
     initEventListeners();
-    loadBooks();
 });
 
 // ===== ГЛОБАЛЬНЫЕ ФУНКЦИИ =====
