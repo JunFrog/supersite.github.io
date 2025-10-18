@@ -498,26 +498,31 @@ form {
         width: 100%;
     }
 }
-/* Компактный вариант описания */
+/* Стили для описания */
 .book-card .description {
     color: var(--text-secondary);
-    font-size: 0.85rem;
-    line-height: 1.3;
-    margin: 8px 0 12px 0;
-    opacity: 0.8;
-    max-height: 3.9em; /* ~3 строки */
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 10px 0 15px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Ограничиваем до 3 строк */
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    position: relative;
+    text-overflow: ellipsis;
 }
 
-.book-card .description::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30%;
-    height: 1.2em;
-    background: linear-gradient(90deg, transparent, var(--bg-card) 50%);
+/* При наведении показываем полное описание */
+.book-card:hover .description {
+    -webkit-line-clamp: unset;
+    display: block;
+}
+
+/* Для мобильных - всегда показываем полное описание */
+@media (max-width: 768px) {
+    .book-card .description {
+        -webkit-line-clamp: unset;
+        display: block;
+    }
 }
 @media (max-width: 480px) {
     body {
