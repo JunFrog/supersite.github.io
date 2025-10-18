@@ -7,12 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ЗАЩИТНЫЙ ЭКРАН - ДОБАВЬ ЭТОТ БЛОК -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-modal">
+            <h2>🔒 Доступ к библиотеке</h2>
+            <p>Введите пароль для редактирования:</p>
+            <input type="password" id="passwordInput" placeholder="Пароль" class="auth-input">
+            <button onclick="checkPassword()" class="btn btn-primary auth-btn">Войти</button>
+            <p class="auth-note">Для просмотра пароль не требуется</p>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Шапка -->
         <header class="header">
             <h1>📚 Моя Библиотека</h1>
             <div class="header-controls">
-                <button class="btn btn-secondary" id="themeToggle">🌙 Тёмная тема</button>
                 <button class="btn btn-primary" id="addBookBtn">+ Добавить</button>
             </div>
         </header>
@@ -106,6 +116,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Кнопка темы в углу -->
+    <button class="theme-toggle-btn" id="themeToggle">🌙</button>
 
     <script src="script.js"></script>
 </body>
