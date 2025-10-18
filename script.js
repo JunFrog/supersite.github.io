@@ -1,10 +1,109 @@
 console.log('✅ Script loaded successfully!');
 
 const API_URL = 'https://68c5b6e0a712aaca2b697175.mockapi.io/api/v1/library';
+const SITE_PASSWORD = 'ямегазвезда'; // Замени на свой пароль
 
 let books = [];
 let filteredBooks = [];
+let EDITING_ENABLED = false;
 
+// ===== СИСТЕМА ЗАЩИТЫ =====
+function initAuth() {
+    console.log('🔐 Initializing auth...');
+    const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+    
+    if (isAuthenticated) {
+        enableEditing();
+    } else {
+        showAuthOverlay();
+    }
+}
+
+function showAuthOverlay() {
+    console.log('🔒 Showing auth overlay');
+    const authOverlay = document.getElementById('authOverlay');
+    if (authOverlay) {
+        authOverlay.style.display = 'flex';
+    }
+    disableEditing();
+}
+
+function hideAuthOverlay() {
+    console.log('🔓 Hiding auth overlay');
+    const authOverlay = document.getElementById('authOverlay');
+    if (authOverlay) {
+        authOverlay.style.display = 'none';
+    }
+}
+
+function checkPassword() {
+    const passwordInput = document.getElementById('passwordInput');
+    const password = passwordInput.value;
+    
+    console.log('🔑 Checking password...');
+    
+    if (password === SITE_PASSWORD) {
+        localStorage.setItem('authenticated', 'true');
+        enableEditing();
+        hideAuthOverlay();
+        showNotification('🔓 Редактирование разрешено', 'success');
+    } else {
+        passwordInput.value = '';
+        passwordInput.placeholder = 'Неверный пароль!';
+        passwordInput.style.borderColor = '#e74c3c';
+        setTimeout(() => {
+            passwordInput.style.borderColor = '#e9ecef';
+            passwordInput.placeholder = 'Пароль';
+        }, 2000);
+    }
+}
+
+function enableEditing() {
+    console.log('✏️ Enabling editing');
+    EDITING_ENABLED = true;
+    
+    const addBookBtn = document.getElementById('addBookBtn');
+    if (addBookBtn) {
+        addBookBtn.disabled = false;
+        addBookBtn.classList.remove('btn-locked');
+    }
+}
+
+function disableEditing() {
+    console.log('🔒 Disabling editing');
+    EDITING_ENABLED = false;
+    
+    const addBookBtn = document.getElementById('addBookBtn');
+    if (addBookBtn) {
+        addBookBtn.disabled = true;
+        addBookBtn.classList.add('btn-locked');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: ${type === 'success' ? '#27ae60' : '#3498db'};
+        color: white;
+        border-radius: 8px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// ===== УПРАВЛЕНИЕ ТЕМОЙ =====
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -26,6 +125,7 @@ function updateThemeButton(theme) {
     }
 }
 
+// ===== РАБОТА С ДАННЫМИ =====
 async function loadBooks() {
     console.log('🔍 Starting data load...');
     
@@ -78,6 +178,7 @@ function applyFilters() {
     console.log('📋 Filtered books:', filteredBooks.length);
     renderBooks();
 }
+
 function renderBooks() {
     console.log('🎨 Rendering books...');
     const booksContainer = document.getElementById('booksContainer');
@@ -109,7 +210,6 @@ function renderBooks() {
                 <h3>${book.title}</h3>
                 <p class="author">${book.author}</p>
                 
-                <!-- ДОБАВЛЯЕМ ОПИСАНИЕ -->
                 ${book.description ? `<p class="description">${book.description}</p>` : ''}
                 
                 <div class="meta">
@@ -130,6 +230,7 @@ function renderBooks() {
     console.log('✅ Books rendered successfully');
 }
 
+// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
 function getTypeLabel(type) {
     const types = {
         'book': 'Книга',
@@ -159,7 +260,20 @@ function getDefaultImage(type) {
     return defaultImages[type] || 'https://via.placeholder.com/400x280/95a5a6/ffffff?text=📁';
 }
 
+function showErrorMessage(message) {
+    const booksContainer = document.getElementById('booksContainer');
+    if (booksContainer) {
+        booksContainer.innerHTML = `<div class="error">${message}</div>`;
+    }
+}
+
+// ===== РАБОТА С МОДАЛЬНЫМИ ОКНАМИ =====
 function openModal(book = null) {
+    if (!EDITING_ENABLED) {
+        showAuthOverlay();
+        return;
+    }
+    
     const bookModal = document.getElementById('bookModal');
     const modalTitle = document.getElementById('modalTitle');
     
@@ -187,8 +301,14 @@ function closeModalWindow() {
     document.getElementById('bookForm').reset();
 }
 
+// ===== ОБРАБОТКА ФОРМ =====
 async function handleFormSubmit(event) {
     event.preventDefault();
+    
+    if (!EDITING_ENABLED) {
+        showAuthOverlay();
+        return;
+    }
     
     const formData = {
         title: document.getElementById('title').value,
@@ -211,12 +331,14 @@ async function handleFormSubmit(event) {
         
         closeModalWindow();
         await loadBooks();
+        showNotification('✅ Изменения сохранены', 'success');
     } catch (error) {
         console.error('Save error:', error);
-        alert('Ошибка сохранения: ' + error.message);
+        showNotification('❌ Ошибка сохранения: ' + error.message, 'error');
     }
 }
 
+// ===== API ФУНКЦИИ =====
 async function addBook(bookData) {
     const response = await fetch(API_URL, {
         method: 'POST',
@@ -244,6 +366,11 @@ async function updateBook(id, bookData) {
 }
 
 async function deleteBook(id) {
+    if (!EDITING_ENABLED) {
+        showAuthOverlay();
+        return;
+    }
+    
     if (!confirm('Удалить этот элемент?')) return;
     
     try {
@@ -253,38 +380,42 @@ async function deleteBook(id) {
         
         if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
         await loadBooks();
+        showNotification('🗑️ Элемент удален', 'success');
     } catch (error) {
-        alert('Ошибка удаления: ' + error.message);
+        showNotification('❌ Ошибка удаления: ' + error.message, 'error');
     }
 }
 
-function showErrorMessage(message) {
-    const booksContainer = document.getElementById('booksContainer');
-    if (booksContainer) {
-        booksContainer.innerHTML = `<div class="error">${message}</div>`;
-    }
-}
-
+// ===== РЕДАКТИРОВАНИЕ =====
 function editBook(id) {
+    if (!EDITING_ENABLED) {
+        showAuthOverlay();
+        return;
+    }
+    
     const book = books.find(b => b.id === id);
     if (book) openModal(book);
 }
 
+// ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
 function initEventListeners() {
     console.log('🔌 Initializing event listeners...');
     
+    // Кнопка темы
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
         console.log('✅ Theme toggle listener added');
     }
     
+    // Кнопка добавления
     const addBookBtn = document.getElementById('addBookBtn');
     if (addBookBtn) {
         addBookBtn.addEventListener('click', () => openModal());
         console.log('✅ Add book listener added');
     }
     
+    // Модальное окно
     const closeModal = document.getElementById('closeModal');
     if (closeModal) {
         closeModal.addEventListener('click', closeModalWindow);
@@ -297,12 +428,14 @@ function initEventListeners() {
         console.log('✅ Cancel button listener added');
     }
     
+    // Форма
     const bookForm = document.getElementById('bookForm');
     if (bookForm) {
         bookForm.addEventListener('submit', handleFormSubmit);
         console.log('✅ Form submit listener added');
     }
     
+    // Фильтры
     const typeFilter = document.getElementById('typeFilter');
     if (typeFilter) {
         typeFilter.addEventListener('change', applyFilters);
@@ -321,24 +454,39 @@ function initEventListeners() {
         console.log('✅ Search input listener added');
     }
     
+    // Закрытие модального окна при клике вне его
     window.addEventListener('click', (event) => {
         if (event.target === document.getElementById('bookModal')) {
             closeModalWindow();
         }
     });
     
+    // Обработка Enter в поле пароля
+    const passwordInput = document.getElementById('passwordInput');
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    }
+    
     console.log('✅ All event listeners initialized');
 }
 
+// ===== ИНИЦИАЛИЗАЦИЯ =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM loaded, initializing app...');
     initTheme();
+    initAuth(); // Защита включается первой!
     initEventListeners();
     loadBooks();
 });
 
+// ===== ГЛОБАЛЬНЫЕ ФУНКЦИИ =====
 window.editBook = editBook;
 window.deleteBook = deleteBook;
 window.openModal = openModal;
 window.loadBooks = loadBooks;
 window.toggleTheme = toggleTheme;
+window.checkPassword = checkPassword;
